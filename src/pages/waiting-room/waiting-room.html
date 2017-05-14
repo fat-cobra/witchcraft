@@ -1,2 +1,3 @@
 <h1>Tell your buddies to join this room:</h1>
 <h2>{{ (room | async).roomId }}</h2>
+<li *ngFor="let member of members;">{{ member.$key }}</li>

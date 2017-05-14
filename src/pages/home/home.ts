@@ -22,7 +22,7 @@ export class HomePage {
   private createRoom() {
     let room = this.roomService.create(this.user.uid);
     this.nav.push(WaitingRoomPage, {
-      room
+      room,
     });
   }
 

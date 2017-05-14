@@ -32,6 +32,10 @@ export class RoomService {
         });
     }
 
+    listMembers(roomKey: string) {
+        return this.db.list(`/rooms/${roomKey}/members/`);
+    }
+
     private generateId() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
