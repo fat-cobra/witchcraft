@@ -1,4 +1,4 @@
-import { HomePage } from './../home/home';
+import { HomePage } from './../home/home.page';
 import { NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AngularFireAuth } from "angularfire2/auth";
@@ -12,7 +12,7 @@ export class LoginPage {
 
     constructor(private afAuth: AngularFireAuth, nav: NavController) {
         this.afAuth.authState.subscribe(state => {
-            console.log(state);
+            console.log("Current user", state);
             
             if (state) {
                 nav.push(HomePage);

@@ -29,6 +29,10 @@ export class HomePage {
   private joinRoom() {
     if (this.enteredRoomId) {
       this.roomService.join(this.user.uid, this.enteredRoomId);
+
+      this.nav.push(WaitingRoomPage, {
+        room: this.roomService.getById(this.enteredRoomId)
+      });
     }
   }
 
