@@ -6,5 +6,5 @@
         <li *ngFor="let member of room.members">{{ member }}</li>
     </ul>
 
-    <button (click)="startGame()" *ngIf="isLeader">Start Game</button>
+    <button (click)="startGame()" *ngIf="room.isMine">Start Game</button>
 </div>

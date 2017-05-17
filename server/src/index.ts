@@ -3,11 +3,7 @@ import * as express from "express";
 import * as http from "http";
 import * as socketIo from "socket.io";
 import { Room } from '../../src/models/room.model';
-
-enum UserState {
-    Disconnected,
-    Connected,
-}
+import { UserState } from './enums';
 
 class Server {
     public static readonly PORT = 8080;
@@ -43,6 +39,7 @@ class Server {
                     leaderId: socket.client.id,
                     roomId: this.generateId(),
                     members: [socket.client.id],
+                    isMine: true,
                 };
 
                 socket.join(room.roomId);
@@ -55,16 +52,22 @@ class Server {
             socket.on('join-room', (roomId: string) => {
                 let room = this.rooms.find(room => room.roomId == roomId);
 
-                room.members.push(socket.client.id);
-                socket.join(room.roomId);
-                socket.in(room.roomId).emit('member-state-changed', <MemberStateChange>{
-                    user: socket.client.id,
-                    state: UserState.Connected,
-                    newMembers: room.members,
-                });
+                if (room) {
+                    room.isMine = (room.leaderId == socket.client.id);
+                    room.members.push(socket.client.id);
+                    socket.join(room.roomId);
+                    socket.in(room.roomId).emit('member-state-changed', <MemberStateChange>{
+                        user: socket.client.id,
+                        state: UserState.Connected,
+                        newMembers: room.members,
+                    });
 
-                socket.emit('join-room-response', room);
-                console.log('User joined room', room);
+                    socket.emit('join-room-response', room);
+                    console.log('User joined room', room);
+                }
+                else {
+                    socket.emit('join-room-response', undefined);
+                }
             });
 
             socket.on('disconnect', () => {
