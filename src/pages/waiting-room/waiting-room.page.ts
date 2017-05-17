@@ -8,10 +8,12 @@ import { NavParams } from "ionic-angular";
     templateUrl: 'waiting-room.html',
 })
 export class WaitingRoomPage {
-    private room: Observable<Room>;
+    private room: Room;
+    private isLeader: Boolean;
 
     constructor(params: NavParams) {
         this.room = params.get('room');
-        this.room.subscribe(x => console.log(x));
+        console.log(this.room);
+        this.isLeader = true; // Not implemented
     }
 }

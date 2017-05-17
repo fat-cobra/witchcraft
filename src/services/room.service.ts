@@ -4,12 +4,18 @@ import { Room } from '../models/room.model';
 import { Observable } from "rxjs/Observable";
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
+import * as socketIo from 'socket.io-client';
+
 
 @Injectable()
 export class RoomService {
-    constructor(private db: AngularFireDatabase) { }
+    private socket: SocketIOClient.Socket;
 
-    get(roomKey: string) {
+    constructor(private db: AngularFireDatabase) {
+        this.socket = socketIo('http://localhost:8080');
+    }
+
+    get(roomKey: string): Observable<Room> {
         return this.db.object(`/rooms/${roomKey}`);
     }
 
@@ -18,41 +24,17 @@ export class RoomService {
             .switchMap(x => this.db.object(`/rooms/${x.$value}`));
     }
 
-    create(leaderId: string): Observable<Room> {
-        let room: Room = {
-            roomId: this.generateId(),
-            leaderId
-        };
-
-        let roomKey = this.db.list('/rooms').push(room).key;
-        this.db.object(`/room-map/${room.roomId}`).set(roomKey);
-
-        this.join(leaderId, room.roomId);
-
-        return this.db.object(`/rooms/${roomKey}`);
+    create(leaderId: string): Promise<Room> {
+        return new Promise<Room>((resolver, reject) => {
+            this.socket.emit('create-room', leaderId)
+                .once('create-room-response', (room) => room ? resolver(room) : reject('Could not create room'));
+        });
     }
 
-    join(userId: string, roomId: string) {
-        this.db.object(`/room-map/${roomId}`).subscribe(obj => {
-            if (obj.$value) {
-                let roomKey = obj.$value;
-            }
+    join(userId: string, roomId: string) : Promise<void> {
+        return new Promise<void>((resolver, reject) => {
+            this.socket.emit('join-room', roomId)
+                .once('join-room-response', (response) => response ? resolver() : reject());
         });
-
-        this.getById(roomId).subscribe(room => {
-            this.db.object(`/rooms/${room.$key}/members/${userId}`).set(true);
-        })
-
-        return this.getById(roomId);
-    }   
-
-    private generateId() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-        for (var i = 0; i < 5; i++)
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return text;
     }
 }

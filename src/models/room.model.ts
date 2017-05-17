@@ -1,6 +1,5 @@
-import { FirebaseBaseModel } from './firebase-base.model';
-
-export class Room extends FirebaseBaseModel {
+export class Room {
     roomId: string;
     leaderId: string;
+    members: string[];
 }

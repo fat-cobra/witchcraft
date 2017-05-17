@@ -1,0 +1,24 @@
+{
+  "name": "witchcraft-server",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "author": "fat-cobra",
+  "license": "MIT",
+  "scripts": {
+    "start": "gulp & node build/index.js"
+  },
+  "dependencies": {
+    "@types/express": "~4.0.33",
+    "@types/socket.io": "^1.4.27",
+    "express": "~4.10.0",
+    "socket.io": "~1.5.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-run": "^1.7.1",
+    "gulp-typescript": "^3.1.2",
+    "run-sequence": "^1.2.2",
+    "typescript": "2.2.1"
+  }
+}

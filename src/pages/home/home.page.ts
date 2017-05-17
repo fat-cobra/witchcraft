@@ -20,19 +20,20 @@ export class HomePage {
   }
 
   private createRoom() {
-    let room = this.roomService.create(this.user.uid);
-    this.nav.push(WaitingRoomPage, {
-      room
-    });
+    let room = this.roomService.create(this.user.uid).then(room =>
+      this.nav.push(WaitingRoomPage, {
+        room
+      })
+    );
   }
 
   private joinRoom() {
     if (this.enteredRoomId) {
-      this.roomService.join(this.user.uid, this.enteredRoomId);
-
-      this.nav.push(WaitingRoomPage, {
-        room: this.roomService.getById(this.enteredRoomId)
-      });
+      this.roomService.join(this.user.uid, this.enteredRoomId).then(room =>
+        this.nav.push(WaitingRoomPage, {
+          room
+        })
+      );
     }
   }
 
