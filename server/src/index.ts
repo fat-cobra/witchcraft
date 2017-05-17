@@ -1,7 +1,13 @@
+import { MemberStateChange } from '../../src/models/member-state-change.model';
 import * as express from "express";
 import * as http from "http";
 import * as socketIo from "socket.io";
 import { Room } from '../../src/models/room.model';
+
+enum UserState {
+    Disconnected,
+    Connected,
+}
 
 class Server {
     public static readonly PORT = 8080;
@@ -32,12 +38,14 @@ class Server {
 
         this.io.on('connect', (socket: SocketIO.Socket) => {
             console.log('Connected client on port %s.', Server.PORT);
-            socket.on('create-room', (leaderId: string) => {
+            socket.on('create-room', () => {
                 let room: Room = {
-                    leaderId,
+                    leaderId: socket.client.id,
                     roomId: this.generateId(),
-                    members: [leaderId],
+                    members: [socket.client.id],
                 };
+
+                socket.join(room.roomId);
 
                 this.rooms.push(room);
                 socket.emit('create-room-response', room);
@@ -46,12 +54,31 @@ class Server {
 
             socket.on('join-room', (roomId: string) => {
                 let room = this.rooms.find(room => room.roomId == roomId);
-                socket.emit('join-room-response', true);
+
+                room.members.push(socket.client.id);
+                socket.join(room.roomId);
+                socket.in(room.roomId).emit('member-state-changed', <MemberStateChange>{
+                    user: socket.client.id,
+                    state: UserState.Connected,
+                    newMembers: room.members,
+                });
+
+                socket.emit('join-room-response', room);
                 console.log('User joined room', room);
             });
 
             socket.on('disconnect', () => {
                 console.log('Client disconnected');
+                this.rooms
+                    .filter(room => room.members.some(member => member == socket.client.id))
+                    .forEach(room => {
+                        socket.in(room.roomId).emit("member-state-changed", <MemberStateChange>{
+                            user: socket.client.id,
+                            state: UserState.Disconnected,
+                            newMembers: room.members,
+                        });
+                        room.members.splice(room.members.indexOf(socket.client.id), 1);
+                    });
             });
         });
     }
@@ -59,11 +86,11 @@ class Server {
     private generateId() {
         let id: string = '';
         do {
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-        for (var i = 0; i < 5; i++)
-            id += possible.charAt(Math.floor(Math.random() * possible.length));
-        } while(this.rooms.some(room => room.roomId == id));
+            for (var i = 0; i < 3; i++)
+                id += possible.charAt(Math.floor(Math.random() * possible.length));
+        } while (this.rooms.some(room => room.roomId == id));
 
         return id;
     }

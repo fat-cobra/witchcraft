@@ -1,4 +1,10 @@
-<h1>Tell your buddies to join this room:</h1>
-<h2>{{ room.roomId }}</h2>
+<div *ngIf="room">
+    <h1>Tell your buddies to join this room:</h1>
+    <h2>{{ room.roomId }}</h2>
 
-<button (click)="startGame()" *ngIf="isLeader">Start Game</button>
+    <ul>
+        <li *ngFor="let member of room.members">{{ member }}</li>
+    </ul>
+
+    <button (click)="startGame()" *ngIf="isLeader">Start Game</button>
+</div>

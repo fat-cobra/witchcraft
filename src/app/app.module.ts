@@ -1,3 +1,4 @@
+import { GameService } from './../services/game.service';
 import { WaitingRoomPage } from './../pages/waiting-room/waiting-room.page';
 import { RoomService } from './../services/room.service';
 import { LoginPage } from './../pages/login/login.page';
@@ -46,6 +47,7 @@ import { HomePage } from '../pages/home/home.page';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     RoomService,
+    GameService,
   ]
 })
 export class AppModule {}
