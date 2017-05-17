@@ -1,4 +1,6 @@
-# witchcraft
+# WitchCraft (Codename)
+
+Multiplatform card game
 
 ## Development enviorment installation
 1. Install Ionic version 2.2.1 using: `npm i -g ionic@2.2.1`
