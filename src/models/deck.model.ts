@@ -32,6 +32,16 @@ export abstract class Deck {
     public putCard(card: Card) {
         this.cards.push(card);
     }
+
+    protected initializeDeck(cardType: string) {
+        let obj: any;
+        for (obj in window) {
+            if (obj.endsWith(cardType)) {
+                /* This is a bit dangerous, security-wise */
+                this.cards.push(window[obj]());
+            }
+        }
+    }
 }
 
 export class SpellsDeck extends Deck {
@@ -40,7 +50,7 @@ export class SpellsDeck extends Deck {
     private constructor() {
         super();
         this.cards = new Array<SpellCard>();
-        this.cards.push(new AbraSourceSpell());
+        this.initializeDeck("SpellCard");
     }
 }
 
@@ -50,6 +60,7 @@ export class TreasureDeck extends Deck {
     private constructor() {
         super();
         this.cards = new Array<TreasureCard>();
+        this.initializeDeck("TreasureCard");
     }
 }
 
@@ -59,6 +70,7 @@ export class DeadWizardDeck extends Deck {
     private constructor() {
         super();
         this.cards = new Array<DeadWizardCard>();
+        this.initializeDeck("DeadWizartCard");
     }
 }
 
