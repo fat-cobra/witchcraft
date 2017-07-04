@@ -1,5 +1,7 @@
 # WitchCraft (Codename)
 
+### Imporant Notice: witchcraft is still under development.
+
 Multiplatform card game
 
 ## Development enviorment installation
